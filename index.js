@@ -83,6 +83,26 @@ function editTodo(todo, newtext) {
 }
 
 
+function ListenToDoForm() {
+
+    
+
+    addTodoForm.addEventListener('submit', function (event){
+        event.preventDefault()
+
+        const todo = {
+            text: addTodoForm.text.value,
+            completed: false
+        }
+
+        addTodo(todo)
+        renderTodo()
+
+        addTodoForm.reset()
+
+    })
+}
+
 function renderTodo() {
     const incompleteTodos = getIncompleteTodos()
     todoList.innerHTML = ''
@@ -191,6 +211,7 @@ function renderTodoCompleted() {
 
 function render() {
     console.log(state)
+    ListenToDoForm()
     renderTodo()
     renderTodoCompleted()
 }
