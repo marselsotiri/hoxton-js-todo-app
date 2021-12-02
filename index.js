@@ -68,40 +68,30 @@ function toggleTodo(todo) {
     todo.completed = !todo.completed
 }
 
-function addTodo(todo) {
+function addTodo(title) {
+    const todo = {
+        text: title,
+        completed: false
+    }
     state.todos.push(todo)
 }
 
-function deleteTodo(text) {
-    state.todos = state.todos.filter(function (todo) {
-        return todo.text !== text
+function deleteTodo(title) {
+    const updatedTodos = state.todos.filter(function (todo) {
+        return todo.text !== title
     })
+
+    state.todos = updatedTodos
 }
 
 function editTodo(todo, newtext) {
     todo.text = newtext
 }
 
-
-function ListenToDoForm() {
-
-    
-
-    addTodoForm.addEventListener('submit', function (event){
-        event.preventDefault()
-
-        const todo = {
-            text: addTodoForm.text.value,
-            completed: false
-        }
-
-        addTodo(todo)
-        renderTodo()
-
-        addTodoForm.reset()
-
-    })
+function toggleShowCompleted() {
+    state.showCompleted = !state.showCompleted
 }
+
 
 function renderTodo() {
     const incompleteTodos = getIncompleteTodos()
@@ -152,6 +142,16 @@ function renderTodo() {
             render()
         })
 
+        // When I click the delete button for a todo
+        const deleteBtn = todoLi.querySelector('.delete')
+        deleteBtn.addEventListener('click', function () {
+            // delete the todo with this title
+            deleteTodo(todo.text)
+            // rerender the page
+            render()
+        })
+
+
 
     }
 }
@@ -161,6 +161,11 @@ function renderTodoCompleted() {
 
     const completedTodos = getCompletedTodos()
     completedList.innerHTML = ''
+
+    const completedSection = document.querySelector('section.completed-section')
+    if (state.showCompleted) completedSection.style.display = 'block'
+    else completedSection.style.display = 'none'
+
 
     for (const todo of completedTodos) {
         const todoLi = document.createElement('li')
@@ -205,15 +210,61 @@ function renderTodoCompleted() {
             render()
         })
 
+        // When I click the delete button for a todo
+        const deleteBtn = todoLi.querySelector('.delete')
+        deleteBtn.addEventListener('click', function () {
+            // delete the todo with this title
+            deleteTodo(todo.text)
+            // rerender the page
+            render()
+        })
+
+
     }
 }
 
+function renderCheckbox () {
+    if (state.showCompleted) showCompletedCheckbox.checked = true
+    else showCompletedCheckbox.checked = false
+  }
+  
+
 
 function render() {
-    console.log(state)
-    ListenToDoForm()
     renderTodo()
     renderTodoCompleted()
+    renderCheckbox ()
 }
 
-render()
+// Helper functions
+function listenToShowCompletedCheckbox () {
+    showCompletedCheckbox.addEventListener('click', function () {
+      toggleShowCompleted()
+      render()
+    })
+  }
+  
+  function listenToAddTodoForm () {
+    // When the todo form is submitted:
+    addTodoForm.addEventListener('submit', function (event) {
+      // prevent the form from refreshing the page
+      event.preventDefault()
+  
+      // - Add a new todo to the todos array
+      addTodo(addTodoForm.title.value)
+  
+      // clear up the form
+      addTodoForm.reset()
+  
+      // - Rerender
+      render()
+    })
+  }
+  
+  function init () {
+    render()
+    listenToShowCompletedCheckbox()
+    listenToAddTodoForm()
+  }
+  
+  init()
